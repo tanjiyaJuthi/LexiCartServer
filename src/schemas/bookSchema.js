@@ -23,9 +23,9 @@ export const bookSchema = new mongoose.Schema(
         },
 
         category: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category",
             required: true,
-            trim: true,
         },
 
         coverImage: {
@@ -61,11 +61,6 @@ export const bookSchema = new mongoose.Schema(
             required: true,
         },
 
-        librarianName: {
-            type: String,
-            required: true,
-        },
-
         averageRating: {
             type: Number,
             default: 0,
@@ -84,7 +79,11 @@ export const bookSchema = new mongoose.Schema(
     }
 );
 
-bookSchema.index({ title: "text", author: "text" });
+bookSchema.index({
+    title: "text",
+    author: "text",
+    description: "text",
+});
 
 bookSchema.index({
     category: 1,

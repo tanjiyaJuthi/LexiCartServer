@@ -1,5 +1,14 @@
-export const escapeRegex = (str) =>
-  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export const sanitizeText = (text = "") => {
+    return text
+        .replace(/<[^>]*>/g, "")
+        .replace(/[^a-zA-Z0-9\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(
+        /\b\w/g,
+        (char) => char.toUpperCase()
+    );
+};
 
 export const generateSlug = (text) =>
   text

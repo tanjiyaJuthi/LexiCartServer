@@ -2,14 +2,18 @@ import mongoose from "mongoose";
 
 export const categorySchema = new mongoose.Schema(
     {
-        categoryName: { 
+        name: { 
             type: String, 
             required: true, 
-            unique: true 
+            unique: true,
+            trim: true,
+            minlength: 2,
+            maxlength: 50,
         },
         
         description: {
             type: String,
+            default: "",
             trim: true,
             maxlength: 500,
         },
@@ -17,6 +21,11 @@ export const categorySchema = new mongoose.Schema(
         image: {
             type: String,
             trim: true,
+        },
+
+        isActive: {
+            type: Boolean,
+            default: true,
         },
     },
     {

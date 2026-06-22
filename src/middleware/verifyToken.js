@@ -38,11 +38,9 @@ export const verifyToken = async (req, res, next) => {
     } catch (error) {
         // console.error(error);
 
-        return res
-            .status(500)
-            .json({
-                success: false,
-                message: 'Authentication Failed!'
-            });
+        return res.status(401).json({
+            success:false,
+            message:"Invalid token"
+        });
     }
 }

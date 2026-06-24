@@ -8,7 +8,15 @@ export const createCategory = async (req, res) => {
             description
         } = req.body;
 
+        if (!name?.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Category name is required",
+            });
+        }
+
         const normalizedName = name.trim().toLowerCase();
+
         const exists = await Category.findOne({
             name: normalizedName,
         });
@@ -92,8 +100,7 @@ export const updateCategory = async (req, res) => {
             req.params.id,
             req.body,
             {
-                new: true,
-                runValidators: true,
+                returnOriginal: false,
             }
         );
 

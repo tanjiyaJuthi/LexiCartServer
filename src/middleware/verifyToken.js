@@ -4,7 +4,7 @@ import {JWKS} from './joseJs.js';
 export const verifyToken = async (req, res, next) => {
     try {
         const authHeader = req?.headers.authorization;
-        console.log(authHeader);
+        // console.log(authHeader);
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res
                 .status(401)

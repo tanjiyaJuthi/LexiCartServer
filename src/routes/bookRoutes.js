@@ -15,6 +15,7 @@ import {
     getPendingBooks,
     unpublishBook,
     getBookByIdDashboard,
+    publishBook,
 } from '../controllers/bookController.js';
 
 const bookRoutes = express.Router();
@@ -69,15 +70,22 @@ bookRoutes.patch(
 bookRoutes.patch(
     "/approve/:id",
     verifyToken,
-    role("admin"),
+    role("admin", "librarian"),
     approveBook
 );
 
 bookRoutes.patch(
     "/unpublish/:id",
     verifyToken,
-    role("admin"),
+    role("admin", "librarian"),
     unpublishBook
+);
+
+bookRoutes.patch(
+    "/publish/:id",
+    verifyToken,
+    role("admin", "librarian"),
+    publishBook
 );
 
 bookRoutes.delete(

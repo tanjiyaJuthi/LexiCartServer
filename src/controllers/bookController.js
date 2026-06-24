@@ -384,7 +384,7 @@ export const unpublishBook = async (req, res) => {
         const book =
             await Book.findByIdAndUpdate(
                 req.params.id,
-                { approvalStatus: "Pending", },
+                { approvalStatus: "Unpublished", },
                 { new: true, }
             );
 
@@ -398,6 +398,35 @@ export const unpublishBook = async (req, res) => {
         res.json({
             success: true,
             message: "Book unpublished",
+            data: book,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const publishBook = async (req, res) => {
+    try {
+        const book =
+            await Book.findByIdAndUpdate(
+                req.params.id,
+                { approvalStatus: "Published", },
+                { new: true, }
+            );
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Book published",
             data: book,
         });
     } catch (error) {

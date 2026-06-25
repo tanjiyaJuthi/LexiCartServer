@@ -21,8 +21,8 @@ export const deliverySchema = new mongoose.Schema(
         },
 
         transactionId: {
-            type: String,
-            default: null,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Transaction",
         },
 
         deliveryFee: {

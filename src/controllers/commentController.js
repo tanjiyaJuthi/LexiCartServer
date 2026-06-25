@@ -1,26 +1,46 @@
 import mongoose from 'mongoose';
 import { Comment } from '../models/commentModel.js';
+import { Book } from '../models/bookModel.js';
 
 export const createComment = async (req, res) => {
     try {
-        const { userId, bookId, commentText } = req.body;
+        const { bookId, commentText} = req.body;
 
-        if (!userId || !bookId || !commentText) {
-            return res.status(400).json({
+        const userId = req.user.id;
+
+        const book =
+            await Book.findById(bookId);
+
+        if (!book) {
+            return res.status(404).json({
                 success: false,
-                message: "All fields are required",
+                message: "Book not found",
             });
         }
 
-        const comment = await Comment.create({
-            userId,
-            bookId,
-            commentText,
-        });
+        // librarian cannot comment own book
+        if (
+            book.librarianId.toString() ===
+            userId.toString()
+        ) {
+            return res.status(403).json({
+                success: false,
+                message:
+                    "You cannot comment on your own book",
+            });
+        }
+
+        const comment =
+            await Comment.create({
+                userId,
+                bookId,
+                commentText,
+            });
 
         res.status(201).json({
             success: true,
-            message: "Comment added successfully",
+            message:
+                "Comment added successfully",
             data: comment,
         });
     } catch (error) {

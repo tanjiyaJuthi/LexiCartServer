@@ -1,6 +1,7 @@
 import express from "express";
 
 import {verifyToken} from "../middleware/verifyToken.js";
+import {role} from "../middleware/role.js";
 
 import { 
     createComment,
@@ -15,6 +16,7 @@ const commentRoutes = express.Router();
 commentRoutes.post(
     "/",
     verifyToken,
+    role("reader"),
     createComment
 );
 
@@ -26,7 +28,6 @@ commentRoutes.get(
 
 commentRoutes.get(
     "/book/:bookId",
-    verifyToken,
     getCommentsByBook
 );
 

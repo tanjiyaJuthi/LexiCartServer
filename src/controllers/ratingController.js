@@ -1,40 +1,63 @@
 import { Rating } from "../models/ratingModel.js";
+import { Book } from "../models/bookModel.js";
 
 // Create Rating
 export const createRating = async (req, res) => {
     try {
         const { bookId, rating } = req.body;
-        const userId = req.user._id;
+        const userId = req.user.id;
 
-        // Check duplicate rating
-        const existingRating = await Rating.findOne({
-            userId,
-            bookId
-        });
+        const book = await Book.findById(bookId);
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found"
+            });
+        }
+
+        // librarian cannot rate own book
+        if (
+            book.librarianId.toString() ===
+            userId.toString()
+        ) {
+            return res.status(403).json({
+                success: false,
+                message:
+                    "You cannot rate your own book"
+            });
+        }
+
+        const existingRating =
+            await Rating.findOne({
+                userId,
+                bookId,
+            });
 
         if (existingRating) {
             return res.status(400).json({
                 success: false,
-                message: "You already rated this book"
+                message:
+                    "You already rated this book",
             });
         }
 
         const newRating = await Rating.create({
             userId,
             bookId,
-            rating
+            rating,
         });
 
         res.status(201).json({
             success: true,
-            message: "Rating added successfully",
-            data: newRating
+            message:
+                "Rating added successfully",
+            data: newRating,
         });
-
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };
@@ -44,25 +67,32 @@ export const getBookRatings = async (req, res) => {
     try {
         const { bookId } = req.params;
 
-        const ratings = await Rating.find({ bookId })
-            .populate("userId", "name photoURL")
-            .sort({ createdAt: -1 });
+        const ratings = await Rating.find({
+            bookId,
+        })
+        .populate("userId", "name photoURL")
+        .sort({ createdAt: -1 });
 
         const averageRating =
             ratings.length > 0
-                ? ratings.reduce((sum, item) => sum + item.rating, 0) / ratings.length
+                ? ratings.reduce(
+                    (sum, item) =>
+                        sum + item.rating,
+                    0
+                ) / ratings.length
                 : 0;
 
         res.status(200).json({
             success: true,
             total: ratings.length,
-            averageRating: averageRating.toFixed(1),
-            data: ratings
+            averageRating:
+                averageRating.toFixed(1),
+            data: ratings,
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };

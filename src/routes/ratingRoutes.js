@@ -15,27 +15,26 @@ const ratingRoutes = express.Router();
 ratingRoutes.post(
     "/",
     verifyToken,
-    role('user'),
+    role('reader'),
     createRating
 );
 
 ratingRoutes.get(
-    "/",
-    verifyToken,
+    "/book/:bookId",
     getBookRatings
 );
 
 ratingRoutes.patch(
     "/",
     verifyToken,
-    role('user'),
+    role('reader'),
     updateRating
 );
 
 ratingRoutes.delete(
     "/",
     verifyToken,
-    role('user'),
+    role('reader'),
     deleteRating
 );
 

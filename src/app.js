@@ -16,6 +16,7 @@ import readingListRoutes from "./routes/readingListRoutes.js";
 import roleRoutes from "./routes/roleRoutes.js";
 import wishListRoutes from "./routes/wishListRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/readingList", readingListRoutes);
 app.use("/api/role", roleRoutes);
 app.use("/api/wishList", wishListRoutes);
 app.use("/api/book", bookRoutes);
+app.use("/api/transaction", transactionRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running");

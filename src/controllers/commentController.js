@@ -103,17 +103,11 @@ export const getCommentsByBook = async (req, res) => {
 // Get Comments By User
 export const getCommentsByUser = async (req, res) => {
     try {
-        const { userId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid User ID",
-            });
-        }
+        const userId = req.user.id;
 
         const comments = await Comment.find({ userId })
             .populate("bookId", "title coverImage")
+            .populate("userId", "name")
             .sort({ createdAt: -1 });
 
         res.status(200).json({

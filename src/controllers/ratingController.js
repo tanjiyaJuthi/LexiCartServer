@@ -97,16 +97,39 @@ export const getBookRatings = async (req, res) => {
     }
 };
 
+export const getRatingsByUser = async (req, res) => {
+    try {
+        const ratings = await Rating.find({
+            userId: req.user.id,
+        })
+            .populate("bookId", "title coverImage author")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            total: ratings.length,
+            data: ratings,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 // Update Rating
 export const updateRating = async (req, res) => {
     try {
         const { id } = req.params;
         const { rating } = req.body;
 
+        const userId = req.user.id;
+
         const updatedRating = await Rating.findOneAndUpdate(
             {
                 _id: id,
-                userId: req.user._id
+                userId
             },
             {
                 rating
@@ -142,9 +165,11 @@ export const deleteRating = async (req, res) => {
     try {
         const { id } = req.params;
 
+        const userId = req.user.id;
+
         const deletedRating = await Rating.findOneAndDelete({
             _id: id,
-            userId: req.user._id
+            userId
         });
 
         if (!deletedRating) {

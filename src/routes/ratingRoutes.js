@@ -7,7 +7,8 @@ import {
     createRating,
     getBookRatings,
     updateRating,
-    deleteRating
+    deleteRating,
+    getRatingsByUser
 } from '../controllers/ratingController.js';
 
 const ratingRoutes = express.Router();
@@ -24,15 +25,22 @@ ratingRoutes.get(
     getBookRatings
 );
 
+ratingRoutes.get(
+    "/my-rating",
+    verifyToken,
+    role('reader'),
+    getRatingsByUser
+);
+
 ratingRoutes.patch(
-    "/",
+    "/:id",
     verifyToken,
     role('reader'),
     updateRating
 );
 
 ratingRoutes.delete(
-    "/",
+    "/:id",
     verifyToken,
     role('reader'),
     deleteRating

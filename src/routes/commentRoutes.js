@@ -7,6 +7,7 @@ import {
     createComment,
     getAllComments,
     getCommentsByBook,
+    getCommentsByUser,
     updateComment,
     deleteComment,
 } from '../controllers/commentController.js';
@@ -23,12 +24,22 @@ commentRoutes.post(
 commentRoutes.get(
     "/",
     verifyToken,
+    role("reader"),
     getAllComments
 );
 
 commentRoutes.get(
     "/book/:bookId",
+    verifyToken,
+    role("reader"),
     getCommentsByBook
+);
+
+commentRoutes.get(
+    "/my-comment",
+    verifyToken,
+    role("reader"),
+    getCommentsByUser
 );
 
 commentRoutes.patch(

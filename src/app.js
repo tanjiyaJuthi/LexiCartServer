@@ -17,6 +17,7 @@ import roleRoutes from "./routes/roleRoutes.js";
 import wishListRoutes from "./routes/wishListRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
+import { stripeWebhook } from "./controllers/transactionController.js";
 
 const app = express();
 
@@ -24,6 +25,14 @@ app.use(cors({
   origin: process.env.BETTER_AUTH_URL,
   credentials: true,
 }));
+
+// for stripe
+app.post(
+  "/api/transaction/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook
+);
+
 app.use(express.json());
 
 await connectMongoose();

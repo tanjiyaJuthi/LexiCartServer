@@ -1,26 +1,35 @@
 import express from "express";
 
 import {
-  createCheckoutSession,
-  stripeWebhook,
+  createTransaction,
+  getLibrarianTransactions,
+  getAdminTransactions,
 } from "../controllers/transactionController.js";
 
 import { verifyToken } from "../middleware/verifyToken.js";
+import { role } from "../middleware/role.js";
 
 const transactionRoutes = express.Router();
+
+transactionRoutes.get(
+  "/librarian",
+  verifyToken,
+  role("librarian"),
+  getLibrarianTransactions
+);
+
+transactionRoutes.get(
+  "/admin",
+  verifyToken,
+  role("admin"),
+  getAdminTransactions
+);
 
 transactionRoutes.post(
   "/checkout",
   verifyToken,
-  createCheckoutSession
-);
-
-transactionRoutes.post(
-  "/webhook",
-  express.raw({
-    type: "application/json",
-  }),
-  stripeWebhook
+  role("reader"),
+  createTransaction,
 );
 
 export default transactionRoutes;

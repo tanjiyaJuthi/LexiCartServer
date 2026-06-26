@@ -17,14 +17,14 @@ const deliveryRoutes = express.Router();
 deliveryRoutes.post(
     "/",
     verifyToken,
-    role('user'),
+    role('reader'),
     createDelivery
 );
 
 deliveryRoutes.get(
-    "/user",
+    "/reader",
     verifyToken,
-    role('user'),
+    role('reader'),
     getUserDeliveries
 );
 
@@ -52,7 +52,7 @@ deliveryRoutes.get(
 deliveryRoutes.delete(
     "/:id",
     verifyToken,
-    role("user"),
+    role("reader"),
     cancelDelivery
 );
 

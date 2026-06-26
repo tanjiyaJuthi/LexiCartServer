@@ -53,7 +53,7 @@ export const createDelivery = async (req, res) => {
 export const getUserDeliveries = async (req, res) => {
     try {
         const deliveries = await Delivery.find({
-            userId: req.user._id,
+            userId: req.user.id,
         })
             .populate("bookId", "title coverImage author")
             .sort({
@@ -75,7 +75,7 @@ export const getUserDeliveries = async (req, res) => {
 export const getLibrarianDeliveries = async (req, res) => {
     try {
         const deliveries = await Delivery.find({
-            librarianId: req.user._id,
+            librarianId: req.user.id,
         })
             .populate("bookId", "title coverImage")
             .populate("userId", "name email photoURL")
@@ -97,15 +97,20 @@ export const getLibrarianDeliveries = async (req, res) => {
 // Update Delivery Status
 export const updateDeliveryStatus = async (req, res) => {
     try {
-        const {
-            status
-        } = req.body;
+        const { status } = req.body;
 
         const delivery = await Delivery.findById(req.params.id);
 
         if (!delivery) {
             return res.status(404).json({
                 message: "Delivery not found",
+            });
+        }
+
+        // Only the assigned librarian can update this delivery
+        if (delivery.librarianId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                message: "Not authorized",
             });
         }
 

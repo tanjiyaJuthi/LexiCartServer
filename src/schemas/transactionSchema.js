@@ -14,6 +14,13 @@ export const transactionSchema = new mongoose.Schema(
       required: true,
     },
 
+    
+    librarianId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     stripeSessionId: {
       type: String,
       required: true,

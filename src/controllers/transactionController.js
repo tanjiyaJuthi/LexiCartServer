@@ -10,9 +10,9 @@ const stripe = new Stripe(
 
 export const createCheckoutSession = async (req, res) => {
     try {
-      // console.log("CHECKOUT HIT");
-      // console.log(req.body);
-      // console.log(req.user);
+      console.log("CHECKOUT HIT");
+      console.log(req.body);
+      console.log(req.user);
 
       const { bookId } = req.body;
 

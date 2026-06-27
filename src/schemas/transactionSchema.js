@@ -13,12 +13,23 @@ export const transactionSchema = new mongoose.Schema(
       ref: "Book",
       required: true,
     },
-
     
     librarianId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "Pending",
+        "Dispatched",
+        "Delivered",
+        "Returned",
+        "Cancelled",
+      ],
+      default: "Pending",
     },
 
     stripeSessionId: {

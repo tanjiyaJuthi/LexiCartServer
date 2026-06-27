@@ -8,7 +8,8 @@ import {
     getBookRatings,
     updateRating,
     deleteRating,
-    getRatingsByUser
+    getRatingsByUser,
+    getMyRating
 } from '../controllers/ratingController.js';
 
 const ratingRoutes = express.Router();
@@ -23,6 +24,13 @@ ratingRoutes.post(
 ratingRoutes.get(
     "/book/:bookId",
     getBookRatings
+);
+
+ratingRoutes.get(
+    "/book/:bookId/me",
+    verifyToken,
+    role("reader"),
+    getMyRating
 );
 
 ratingRoutes.get(

@@ -3,8 +3,7 @@ import express from "express";
 import {verifyToken} from "../middleware/verifyToken.js";
 import {role} from "../middleware/role.js";
 
-import { 
-    createDelivery,
+import {
     getUserDeliveries,
     getLibrarianDeliveries,
     updateDeliveryStatus,
@@ -13,13 +12,6 @@ import {
 } from '../controllers/deliveryController.js';
 
 const deliveryRoutes = express.Router();
-
-deliveryRoutes.post(
-    "/",
-    verifyToken,
-    role('reader'),
-    createDelivery
-);
 
 deliveryRoutes.get(
     "/reader",

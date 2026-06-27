@@ -12,6 +12,7 @@ export const createTransaction = async (req, res) => {
   try {
     const { bookId } = req.body;
     const userId = req.user.id;
+
     const book = await Book.findById(bookId);
 
     if (!book) {
@@ -20,6 +21,27 @@ export const createTransaction = async (req, res) => {
         message: "Book not found",
       });
     }
+
+    if (book.status === "Checked Out") {
+      return res.status(400).json({
+          success: false,
+          message: "This book is currently unavailable for delivery.",
+      });
+    }
+
+    const existingDelivery = await Delivery.findOne({
+      bookId,
+      deliveryStatus: {
+          $in: ["Pending", "Dispatched", "Delivered"]
+      }
+  });
+
+  if (existingDelivery) {
+      return res.status(400).json({
+          success: false,
+          message: "Book already has an active delivery."
+      });
+  }
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: [ "card", ],
@@ -47,6 +69,19 @@ export const createTransaction = async (req, res) => {
         },
       });
 
+      const existingTransaction = await Transaction.findOne({
+        userId,
+        bookId,
+        paymentStatus: "Pending"
+    });
+
+    if (existingTransaction) {
+        return res.status(400).json({
+            success: false,
+            message: "You already have a pending payment."
+        });
+    }
+
     await Transaction.create({
       userId,
       bookId,
@@ -54,7 +89,12 @@ export const createTransaction = async (req, res) => {
       stripeSessionId: session.id,
       amount: book.deliveryFee,
       paymentStatus: "Pending",
+      status: "Pending"
     });
+
+    await Book.findByIdAndUpdate(bookId, {
+      isAvailable: false
+  });
 
     res.json({
       success: true,
@@ -73,6 +113,8 @@ export const createTransaction = async (req, res) => {
 // use in app.js before express json parse
 export const stripeWebhook = async (req, res) => {
   // console.log("Webhook received");
+  // console.log(Buffer.isBuffer(req.body));
+  // console.log("Secret:", process.env.STRIPE_WEBHOOK_SECRET);
   
   let event;
 
@@ -103,21 +145,23 @@ export const stripeWebhook = async (req, res) => {
       stripeSessionId: session.id,
     });
 
-    // console.log(transaction);
+    // console.log("Transaction:", transaction);
 
-    if (transaction) {
-      transaction.paymentStatus = "Paid";
-      transaction.stripePaymentIntentId = session.payment_intent;
-
-      await transaction.save();
+    if (!transaction) {
+      // console.log("Transaction not found for session:", session.id);
+      return res.json({ received: true });
     }
+
+    transaction.paymentStatus = "Paid";
+    transaction.stripePaymentIntentId = session.payment_intent;
+    await transaction.save();
 
     const book = await Book.findById(bookId);
 
-    // console.log(book);
+    // console.log("Book:", book);
 
     const existing = await Delivery.findOne({
-      transactionId: transaction._id
+      transactionId: transaction._id,
     });
 
     if(!existing){
@@ -132,7 +176,6 @@ export const stripeWebhook = async (req, res) => {
       });
       // console.log("Delivery created:", delivery);
     }
-
 
     await Book.findByIdAndUpdate(
       bookId,

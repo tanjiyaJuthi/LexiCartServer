@@ -1,5 +1,6 @@
 import { Rating } from "../models/ratingModel.js";
 import { Book } from "../models/bookModel.js";
+import { ReadingList } from "../models/readingListModel.js";
 
 // Create Rating
 export const createRating = async (req, res) => {
@@ -25,6 +26,18 @@ export const createRating = async (req, res) => {
                 success: false,
                 message:
                     "You cannot rate your own book"
+            });
+        }
+
+        const readingBook = await ReadingList.findOne({
+            userId,
+            bookId,
+        });
+
+        if (!readingBook) {
+            return res.status(403).json({
+                success: false,
+                message: "You can only review books in your reading list.",
             });
         }
 
@@ -95,6 +108,18 @@ export const getBookRatings = async (req, res) => {
             message: error.message,
         });
     }
+};
+
+export const getMyRating = async (req, res) => {
+    const rating = await Rating.findOne({
+        userId: req.user.id,
+        bookId: req.params.bookId,
+    });
+
+    res.json({
+        success: true,
+        data: rating,
+    });
 };
 
 export const getRatingsByUser = async (req, res) => {

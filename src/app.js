@@ -1,5 +1,5 @@
-import dns from "node:dns";
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+// import dns from "node:dns";
+// dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 import 'dotenv/config';
 import express from "express";
@@ -17,6 +17,7 @@ import roleRoutes from "./routes/roleRoutes.js";
 import wishListRoutes from "./routes/wishListRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import { stripeWebhook } from "./controllers/transactionController.js";
 
 const app = express();
@@ -32,15 +33,6 @@ app.post(
   express.raw({ type: "application/json" }),
   stripeWebhook
 );
-
-// app.post(
-//   "/api/transaction/webhook",
-//   express.raw({ type: "application/json" }),
-//   (req, res) => {
-//     console.log("Webhook route reached");
-//     res.sendStatus(200);
-//   }
-// );
 
 app.use(express.json());
 
@@ -63,6 +55,7 @@ app.use("/api/role", roleRoutes);
 app.use("/api/wishList", wishListRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api/transaction", transactionRoutes);
+app.use("/api/review", reviewRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running");

@@ -2,54 +2,6 @@ import {Delivery} from "../models/deliveryModel.js";
 import {Book} from "../models/bookModel.js";
 import {ReadingList} from "../models/readingListModel.js";
 
-// Create Delivery Request
-export const createDelivery = async (req, res) => {
-    try {
-        const {
-            bookId,
-            transactionId,
-            deliveryFee,
-        } = req.body;
-
-        const userId = req.user._id;
-
-        const book = await Book.findById(bookId);
-
-        if (!book) {
-            return res.status(404).json({
-                message: "Book not found",
-            });
-        }
-
-        // Prevent owner requesting own book
-        if (book.librarianId.toString() === userId.toString()) {
-            return res.status(400).json({
-                message: "You cannot request your own book",
-            });
-        }
-
-        const delivery = await Delivery.create({
-            bookId,
-            userId,
-            librarianId: book.librarianId,
-            transactionId,
-            deliveryFee,
-            paymentStatus: "Paid",
-            deliveryStatus: "Pending",
-        });
-
-        res.status(201).json({
-            success: true,
-            message: "Delivery request created",
-            delivery,
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message,
-        });
-    }
-};
-
 // Get User Delivery History
 export const getUserDeliveries = async (req, res) => {
     try {
@@ -60,6 +12,7 @@ export const getUserDeliveries = async (req, res) => {
             .sort({
                 createdAt: -1,
             });
+        // console.log(deliveries);
 
         res.json({
             success: true,
@@ -119,6 +72,7 @@ export const updateDeliveryStatus = async (req, res) => {
             "Pending",
             "Dispatched",
             "Delivered",
+            "Returned"
         ];
 
         if (!allowedStatus.includes(status)) {
@@ -153,7 +107,20 @@ export const updateDeliveryStatus = async (req, res) => {
             await Book.findByIdAndUpdate(
                 delivery.bookId,
                 {
-                    status: "Checked Out"
+                    status: "Checked Out",
+                    isAvailable: false,
+                }
+            );
+        }
+
+        if (status === "Returned") {
+            delivery.returnedDate = new Date();
+
+            await Book.findByIdAndUpdate(
+                delivery.bookId,
+                {
+                    status: "Available",
+                    isAvailable: true,
                 }
             );
         }
@@ -198,7 +165,10 @@ export const getAllDeliveries = async(req,res)=>{
 // Cancel Pending Delivery
 export const cancelDelivery = async(req,res)=>{
     try{
-        const delivery = await Delivery.findById(req.params.id);
+        const delivery = await Delivery.findOne({
+            _id: req.params.id,
+            userId: req.user.id,
+        });
 
         if(!delivery){
             return res.status(404).json({

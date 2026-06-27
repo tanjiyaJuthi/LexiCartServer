@@ -12,13 +12,13 @@ export const addToReadingList = async (req, res) => {
             _id: deliveryId,
             userId,
             bookId,
-            deliveryStatus: "Delivered"
+            deliveryStatus: "Returned"
         });
 
         if (!delivery) {
             return res.status(403).json({
                 success: false,
-                message: "You can only add delivered books to reading list"
+                message: "You can only add returned books to reading list"
             });
         }
 

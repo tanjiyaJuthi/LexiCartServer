@@ -42,6 +42,7 @@ export const deliverySchema = new mongoose.Schema(
                 "Pending",
                 "Dispatched",
                 "Delivered",
+                "Returned",
             ],
             default: "Pending",
         },
@@ -52,8 +53,8 @@ export const deliverySchema = new mongoose.Schema(
         },
 
         dispatchedDate: Date,
-
         deliveredDate: Date,
+        returnedDate: Date,
     },
     {
         timestamps: true,

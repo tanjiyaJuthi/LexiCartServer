@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Comment } from '../models/commentModel.js';
 import { Book } from '../models/bookModel.js';
+import { ReadingList } from '../models/readingListModel.js';
 
 export const createComment = async (req, res) => {
     try {
@@ -27,6 +28,30 @@ export const createComment = async (req, res) => {
                 success: false,
                 message:
                     "You cannot comment on your own book",
+            });
+        }
+
+        const readingBook = await ReadingList.findOne({
+            userId,
+            bookId,
+        });
+
+        if (!readingBook) {
+            return res.status(403).json({
+                success: false,
+                message: "You can only review books in your reading list.",
+            });
+        }
+
+        const existingComment = await Comment.findOne({
+            userId,
+            bookId,
+        });
+
+        if (existingComment) {
+            return res.status(400).json({
+                success: false,
+                message: "You already reviewed this book.",
             });
         }
 
@@ -98,6 +123,18 @@ export const getCommentsByBook = async (req, res) => {
             message: error.message,
         });
     }
+};
+
+export const getMyComment = async (req, res) => {
+    const comment = await Comment.findOne({
+        userId: req.user.id,
+        bookId: req.params.bookId,
+    });
+
+    res.json({
+        success: true,
+        data: comment,
+    });
 };
 
 // Get Comments By User

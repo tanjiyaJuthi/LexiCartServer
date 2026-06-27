@@ -72,6 +72,10 @@ export const bookSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        isAvailable: {
+            type: Boolean,
+            default: true,
+        },
     },
     {
         timestamps: true,

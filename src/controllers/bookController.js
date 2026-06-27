@@ -171,114 +171,6 @@ export const getAllBooks = async (req, res) => {
     }
 };
 
-export const getBookForEdit = async (req, res) => {
-  try {
-    const book = await Book.findOne({
-      _id: req.params.id,
-      librarianId: req.user.id,
-    });
-
-    if (!book) {
-      return res.status(404).json({
-        success: false,
-        message: "Book not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: book,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-export const updateBook = async(req,res)=>{
-    try{
-        const book =
-        await Book.findOne({
-            _id:req.params.id,
-            librarianId:req.user.id
-        });
-
-        if(!book){
-            return res.status(404).json({
-                message:
-                "Book not found or unauthorized"
-            });
-        }
-
-        const allowedFields=[
-            "title",
-            "author",
-            "description",
-            "category",
-            "coverImage",
-            "deliveryFee",
-        ];
-
-        allowedFields.forEach(field=>{
-            if(req.body[field] !== undefined){
-                book[field]=req.body[field];
-            }
-        });
-
-        book.approvalStatus = "Pending";
-
-        await book.save();
-
-        res.json({
-            success:true,
-            message:"Book updated",
-            data:book
-        });
-    }catch(error){
-        res.status(500).json({
-            message:error.message
-        });
-    }
-};
-
-export const deleteBook = async (req, res) => {
-    try {
-
-        let book;
-
-        if (req.user.role === "admin") {
-            book = await Book.findByIdAndDelete(
-                req.params.id
-            );
-        } else {
-            book = await Book.findOneAndDelete({
-                _id: req.params.id,
-                librarianId: req.user.id,
-            });
-        }
-
-        if (!book) {
-            return res.status(404).json({
-                success: false,
-                message: "Book not found",
-            });
-        }
-
-        res.json({
-            success: true,
-            message: "Book deleted",
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
-
 export const getAllBooksDashboard = async (req, res) => {
     try {
         const books = await Book.find({})
@@ -450,6 +342,114 @@ export const getFeaturedBooks = async (req, res) => {
             success: true,
             data: books,
         });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getBookForEdit = async (req, res) => {
+  try {
+    const book = await Book.findOne({
+      _id: req.params.id,
+      librarianId: req.user.id,
+    });
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: book,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateBook = async(req,res)=>{
+    try{
+        const book =
+        await Book.findOne({
+            _id:req.params.id,
+            librarianId:req.user.id
+        });
+
+        if(!book){
+            return res.status(404).json({
+                message:
+                "Book not found or unauthorized"
+            });
+        }
+
+        const allowedFields=[
+            "title",
+            "author",
+            "description",
+            "category",
+            "coverImage",
+            "deliveryFee",
+        ];
+
+        allowedFields.forEach(field=>{
+            if(req.body[field] !== undefined){
+                book[field]=req.body[field];
+            }
+        });
+
+        book.approvalStatus = "Pending";
+
+        await book.save();
+
+        res.json({
+            success:true,
+            message:"Book updated",
+            data:book
+        });
+    }catch(error){
+        res.status(500).json({
+            message:error.message
+        });
+    }
+};
+
+export const deleteBook = async (req, res) => {
+    try {
+
+        let book;
+
+        if (req.user.role === "admin") {
+            book = await Book.findByIdAndDelete(
+                req.params.id
+            );
+        } else {
+            book = await Book.findOneAndDelete({
+                _id: req.params.id,
+                librarianId: req.user.id,
+            });
+        }
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Book deleted",
+        });
+
     } catch (error) {
         res.status(500).json({
             success: false,

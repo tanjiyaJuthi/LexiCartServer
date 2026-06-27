@@ -10,6 +10,7 @@ import {
     getCommentsByUser,
     updateComment,
     deleteComment,
+    getMyComment,
 } from '../controllers/commentController.js';
 
 const commentRoutes = express.Router();
@@ -30,9 +31,14 @@ commentRoutes.get(
 
 commentRoutes.get(
     "/book/:bookId",
+    getCommentsByBook
+);
+
+commentRoutes.get(
+    "/book/:bookId/me",
     verifyToken,
     role("reader"),
-    getCommentsByBook
+    getMyComment
 );
 
 commentRoutes.get(

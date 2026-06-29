@@ -76,6 +76,10 @@ export const bookSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        totalSold: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         timestamps: true,

@@ -17,6 +17,7 @@ import {
     getBookByIdDashboard,
     publishBook,
     getFeaturedBooks,
+    getBooksByLibrarian
 } from '../controllers/bookController.js';
 
 const bookRoutes = express.Router();
@@ -24,8 +25,15 @@ const bookRoutes = express.Router();
 bookRoutes.get(
     "/dashboard",
     verifyToken,
-    role("admin", "librarian"),
+    role("admin"),
     getAllBooksDashboard
+);
+
+bookRoutes.get(
+    "/my-book",
+    verifyToken,
+    role("librarian"),
+    getBooksByLibrarian
 );
 
 bookRoutes.get(

@@ -2,13 +2,13 @@
   "name": "server-side",
   "version": "1.0.0",
   "description": "Server side ofonline library ",
-  "homepage": "https://github.com/tanjiyaJuthi/BiblioDrop-Server#readme",
+  "homepage": "https://github.com/tanjiyaJuthi/LexiCart-Server#readme",
   "bugs": {
-    "url": "https://github.com/tanjiyaJuthi/BiblioDrop-Server/issues"
+    "url": "https://github.com/tanjiyaJuthi/LexiCart-Server/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tanjiyaJuthi/BiblioDrop-Server.git"
+    "url": "git+https://github.com/tanjiyaJuthi/LexiCart-Server.git"
   },
   "license": "ISC",
   "author": "Tanjiya Zahir Bhuiyan",

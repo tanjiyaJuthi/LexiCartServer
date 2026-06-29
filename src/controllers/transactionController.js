@@ -179,7 +179,10 @@ export const stripeWebhook = async (req, res) => {
 
     await Book.findByIdAndUpdate(
       bookId,
-      { status: "Pending Delivery", }
+      {
+        $inc: { totalSold: 1, },
+        status: "Checked Out"
+      }
     );
   }
 

@@ -131,21 +131,17 @@ export const getAllBooks = async (req, res) => {
             sortQuery.createdAt = -1;
         }
 
-        const skip =
-            (Number(page) - 1) * Number(limit);
+        const pageNumber = Number(page);
+        const limitNumber = Number(limit);
+
+        const skip = (pageNumber - 1) * limitNumber;
 
         const books = await Book.find(query)
-            .populate(
-                "category",
-                "name"
-            )
-            .populate(
-                "librarianId",
-                "name image"
-            )
+            .populate( "category", "name" )
+            .populate( "librarianId", "name image" )
             .sort(sortQuery)
             .skip(skip)
-            .limit(Number(limit))
+            .limit(Number(limitNumber))
             .select("-__v");
 
         const total =
@@ -156,11 +152,9 @@ export const getAllBooks = async (req, res) => {
             data: books,
             pagination: {
                 total,
-                page: Number(page),
-                limit: Number(limit),
-                totalPages: Math.ceil(
-                    total / limit
-                ),
+                page: pageNumber,
+                limit: limitNumber,
+                totalPages: Math.ceil( total / limit ),
             },
         });
     } catch (error) {
@@ -174,6 +168,27 @@ export const getAllBooks = async (req, res) => {
 export const getAllBooksDashboard = async (req, res) => {
     try {
         const books = await Book.find({})
+            .populate("category", "name")
+            .populate("librarianId", "name image")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: books,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getBooksByLibrarian = async (req, res) => {
+    try {
+        const books = await Book.find({
+                librarianId: req.user.id
+            })
             .populate("category", "name")
             .populate("librarianId", "name image")
             .sort({ createdAt: -1 });
@@ -335,8 +350,8 @@ export const getFeaturedBooks = async (req, res) => {
             approvalStatus: "Published",
         })
         .populate("category", "name")
-        .sort({ createdAt: -1 })
-        .limit(6);
+        .sort({ totalSold: -1 })
+        .limit(10);
 
         res.status(200).json({
             success: true,
